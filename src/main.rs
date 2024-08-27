@@ -28,22 +28,23 @@ fn count_default_parameters_destructured(source_code: &str) -> usize {
     let root: AnyJsRoot = parse_result.tree();
 
     root.syntax()
-        .descendants()
-        .filter(|node| node.kind() == JsSyntaxKind::JS_FORMAL_PARAMETER)
-        .filter_map(|node| JsFormalParameter::cast(node))
+        .descendants() // 获取语法树的所有后代节点
+        .filter(|node| node.kind() == JsSyntaxKind::JS_FORMAL_PARAMETER) // 筛选出形式参数节点
+        .filter_map(|node| JsFormalParameter::cast(node)) // 将节点转换为JsFormalParameter类型
         .filter(|param| {
             if let Ok(binding) = param.binding() {
+                // 获取参数的绑定
                 matches!(
                     binding.syntax().kind(),
-                    JsSyntaxKind::JS_OBJECT_BINDING_PATTERN
-                        | JsSyntaxKind::JS_ARRAY_BINDING_PATTERN
+                    JsSyntaxKind::JS_OBJECT_BINDING_PATTERN // 匹配对象解构模式
+                        | JsSyntaxKind::JS_ARRAY_BINDING_PATTERN // 或数组解构模式
                 )
             } else {
                 false
             }
         })
-        .filter(|param| param.initializer().is_some())
-        .count()
+        .filter(|param| param.initializer().is_some()) // 筛选出有默认值的参数
+        .count() // 计算符合条件的参数数量
 }
 
 fn main() {
