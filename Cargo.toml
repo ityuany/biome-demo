@@ -14,9 +14,13 @@ edition = "2021"
 biome_js_parser = "0.5.7"
 biome_js_syntax = "0.5.7"
 biome_js_semantic = "0.5.7"
-biome_rowan = "0.5.7" 
+biome_rowan = "0.5.7"
 oxc_semantic = "0.25.0"
 oxc_allocator = "0.25.0"  
 oxc_parser = "0.25.0"
 oxc_ast = "0.25.0"
 oxc_span = "0.25.0"
+# biome_js_parser = { git = "https://github.com/biomejs/biome", branch = "main"}
+# biome_js_syntax = { git = "https://github.com/biomejs/biome", branch = "main" }
+# biome_js_semantic = { git = "https://github.com/biomejs/biome", branch = "main" }
+# biome_rowan = { git = "https://github.com/biomejs/biome", branch = "main" } 

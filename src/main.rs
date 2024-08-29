@@ -29,12 +29,55 @@ fn count_default_parameters_destructured(
 }
 
 fn main() {
+    let source_code_1 = r#"
+            (self.webpackChunkmetric = self.webpackChunkmetric || []).push([
+            ["8227"],
+            {
+                3684: function (t, e, n) {
+                function E({
+                    root: t,
+                    data: e,
+                    x: n,
+                    y: r,
+                    render: i,
+                    event: o,
+                    single: a,
+                    position: u = "right-bottom",
+                    enterable: s = !1,
+                    css: l,
+                    mount: f,
+                    bounding: d,
+                    offset: h,
+                }) {
+                    let y = w(t, f),
+                    {
+                        tooltipElement: x = (function (
+                        t,
+                        e,
+                        n,
+                        r,
+                        i,
+                        o,
+                        a,
+                        u = {},
+                        s = [10, 10]
+                        ) {
+                        let l = new p.u({});
+                        return t.appendChild(l.HTMLTooltipElement), l;
+                        })(y, n, r, u, s, m, b, l, h),
+                    } = g;
+                }
+                },
+            },
+            ]);"#;
+
     let source_code = r#"
         function example({ a = 1, b = 2 } = {}) {}
         const arrowFunc = ({ x = 10, y = 20 } = {}) => {
             const arrowFunc2 = ({ x = 10, y = 20 } = {}) => {};
         };
         function another([first = 'default', second = 0] = []) {}
+         "\uD83D\uDCA9";
     "#;
 
     let parse_result = parse(
@@ -42,6 +85,11 @@ fn main() {
         JsFileSource::js_module(),
         JsParserOptions::default(),
     );
+
+    if parse_result.has_errors() {
+        println!("has_errors {:?}", parse_result.has_errors());
+    }
+
     let root: AnyJsRoot = parse_result.tree();
 
     let mut vec = Vec::new();
