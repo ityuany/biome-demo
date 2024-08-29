@@ -4,19 +4,14 @@ use oxc_ast::{
     AstKind,
 };
 use oxc_parser::Parser;
-use oxc_semantic::SemanticBuilder;
+use oxc_semantic::{Semantic, SemanticBuilder};
 use oxc_span::SourceType;
 
-fn find_arrow_functions(source: &str) -> Vec<String> {
-    let allocator = Allocator::default();
-    let source_type = SourceType::default();
-
-    let ret = Parser::new(&allocator, source, source_type).parse();
-    let program = allocator.alloc(ret.program);
-    let semantic = SemanticBuilder::new(source, source_type)
-        .build(program)
-        .semantic;
-
+fn find_arrow_functions<'a>(
+    source: &str,
+    semantic: &Semantic<'a>,
+    vec: &mut Vec<AstKind<'a>>,
+) -> Vec<String> {
     let mut arrow_functions = Vec::new();
     for node in semantic.nodes().iter() {
         if let AstKind::ArrowFunctionExpression(arrow_func) = node.kind() {
@@ -29,22 +24,20 @@ fn find_arrow_functions(source: &str) -> Vec<String> {
     arrow_functions
 }
 
-fn find_default_destructured_params(source: &str) -> Vec<String> {
-    let allocator = Allocator::default();
-    let source_type = SourceType::default();
-
-    let ret = Parser::new(&allocator, source, source_type).parse();
-    let program = allocator.alloc(ret.program);
-    let semantic = SemanticBuilder::new(source, source_type)
-        .build(program)
-        .semantic;
-
+fn find_default_destructured_params<'a>(
+    source: &str,
+    semantic: &Semantic<'a>,
+    vec: &mut Vec<AstKind<'a>>,
+) -> Vec<String> {
     let mut default_destructured_params = Vec::new();
 
     for node in semantic.nodes().iter() {
+        vec.push(node.kind());
         if let AstKind::ArrowFunctionExpression(arrow_func) = node.kind() {
             check_params(arrow_func, source, &mut default_destructured_params);
+            println!("--> {:?} \n", vec);
         }
+        vec.pop();
     }
 
     default_destructured_params
@@ -68,37 +61,35 @@ fn check_params(arrow_func: &ArrowFunctionExpression, source: &str, results: &mu
     }
 }
 
-// fn main() {
-//     let source = r#"
-//       const outer = (x) => {
-//           const inner = (y) => y * 2;
-//           return inner(x) + 1;
-//       };
-
-//       let multiply = (a, b) => a * b;
-
-//       const nested = () => () => "I'm deeply nested!";
-//   "#;
-
-//     let arrow_functions = find_arrow_functions(source);
-
-//     println!("Found {} arrow function(s):", arrow_functions.len());
-//     for (index, func) in arrow_functions.iter().enumerate() {
-//         println!("{}. {}", index + 1, func);
-//     }
-// }
-
 fn main() {
     let source = r#"
-      const fn1 = ({ a, b } = {}) => a + b;
-      const fn2 = ({ x = 1, y = 2 } = {}) => x * y;
-      const fn3 = (normal, { z = 3 } = {}) => normal + z;
+    hello(){
+        const fn1 = ({ a, b } = {}) => a + b;
+    }
+      
   "#;
 
-    let params = find_default_destructured_params(source);
+    let allocator = Allocator::default();
+    let source_type = SourceType::default();
+
+    let ret = Parser::new(&allocator, source, source_type).parse();
+    let program = allocator.alloc(ret.program);
+    let semantic = SemanticBuilder::new(source, source_type)
+        .build(program)
+        .semantic;
+
+    let mut stack: Vec<AstKind> = Vec::new();
+
+    let params = find_default_destructured_params(source, &semantic, &mut stack);
+    let arrow_functions = find_arrow_functions(source, &semantic, &mut stack);
 
     println!("Found {} default destructured params:", params.len());
     for (index, param) in params.iter().enumerate() {
         println!("{}. {}", index + 1, param);
+    }
+
+    println!("Found {} arrow functions:", arrow_functions.len());
+    for (index, func) in arrow_functions.iter().enumerate() {
+        println!("{}. {}", index + 1, func);
     }
 }
