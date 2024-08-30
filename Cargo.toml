@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 
-# [[bin]]
-# name = "biome-demo"
-# path = "src/oxc.rs"
+[[bin]]
+name = "biome-demo"
+path = "src/oxc.rs"
 
 [dependencies]
 biome_js_parser = "0.5.7"
