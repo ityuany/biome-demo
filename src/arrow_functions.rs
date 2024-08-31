@@ -1,29 +1,44 @@
-use crate::common::Text;
-use oxc_ast::{ast::BindingPatternKind, AstKind};
+use oxc_ast::AstKind;
 use oxc_semantic::AstNode;
-pub trait CompatHandler {
-    fn handle<'a>(&self, source: &str, node: &AstNode<'a>, usage: &mut Vec<AstNode<'a>>);
-}
+
+use crate::common::{Compat, CompatHandler, Support};
+
 pub struct ArrowFunctionsCompat {
-    pub name: String,
+    pub compat: Compat,
 }
 
 impl Default for ArrowFunctionsCompat {
     fn default() -> Self {
         Self {
-            name: "default_destructured_params".to_string(),
+            compat: Compat {
+                name: "arrow_functions".to_string(),
+                description: "arrow function expressions".to_string(),
+                tags: vec![
+                    "web-features:arrow-functions".to_string(),
+                    "web-features:snapshot:ecmascript-2015".to_string(),
+                ],
+                support: Support {
+                    chrome: "45.0.0".to_string(),
+                    chrome_android: "45".to_string(),
+                    firefox: "22".to_string(),
+                    firefox_android: "22".to_string(),
+                    safari: "10".to_string(),
+                    safari_ios: "10".to_string(),
+                    edge: "12".to_string(),
+                    node: "4.0.0".to_string(),
+                    deno: "1.0".to_string(),
+                },
+            },
         }
     }
 }
 
 impl CompatHandler for ArrowFunctionsCompat {
-    fn handle<'a>(&self, source: &str, node: &AstNode<'a>, usage: &mut Vec<AstNode<'a>>) {
-        match node.kind() {
-            AstKind::ArrowFunctionExpression(_arrow_func) => {
-                println!("func_text: {:?}", node.text(source));
-                usage.push(node.clone());
-            }
-            _ => {}
-        }
+    fn handle<'a>(&self, node: &AstNode<'a>) -> bool {
+        matches!(node.kind(), AstKind::ArrowFunctionExpression(_))
+    }
+
+    fn get_compat(&self) -> &Compat {
+        &self.compat
     }
 }
