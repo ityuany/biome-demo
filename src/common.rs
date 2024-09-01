@@ -1,6 +1,6 @@
 use oxc_ast::AstKind;
 use oxc_semantic::AstNode;
-use oxc_span::{GetSpan, Span};
+use oxc_span::GetSpan;
 
 pub trait Text {
     fn text(&self, source: &str) -> String;

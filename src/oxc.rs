@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use arrow_functions::ArrowFunctionsCompat;
-use common::CompatHandler;
+use common::{CompatHandler, Text};
 use default_destructured_params::DefaultDestructuredParamsCompat;
 use oxc_allocator::Allocator;
 
@@ -55,6 +55,15 @@ fn main() {
         .collect::<Vec<_>>();
 
     for node in nodes.iter() {
+        if let Some(parent_id) = nodes.parent_id(node.id()) {
+            let parent_node = nodes.get_node(parent_id);
+            println!(
+                "当前节点: {:?}, 父节点: {:?}",
+                node.text(source),
+                parent_node.text(source)
+            );
+        }
+
         for handler in &u {
             if handler.handle(node) {
                 vec.push(node.clone());
