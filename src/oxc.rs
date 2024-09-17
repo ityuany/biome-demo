@@ -46,6 +46,8 @@ fn main() {
         .build(program)
         .semantic;
 
+    println!("----->>> {:?}", semantic.source_text());
+
     let mut vec: Vec<AstNode> = Vec::new();
 
     let nodes = semantic.nodes();
@@ -87,28 +89,28 @@ fn main() {
         }
     }
 
-    for node in vec.iter() {
-        let span = node.kind().span();
-        let start_position = offset_to_position(span.start as usize, &source).unwrap();
-        let end_position = offset_to_position(span.end as usize, &source).unwrap();
-        println!(
-            "node: {:?}, start_position: {:?}, end_position: {:?}",
-            node.kind().debug_name(),
-            start_position,
-            end_position
-        );
-        if let Some(token) = sourcemap.lookup_source_view_token(
-            &lookup_table,
-            start_position.line,
-            start_position.character,
-        ) {
-            println!("-----------------------------------");
-            println!("{:?}", token.get_source());
-            println!(" {:?}", token.get_source_content());
-        } else {
-            println!("Token not found");
-        }
-    }
+    // for node in vec.iter() {
+    //     let span = node.kind().span();
+    //     let start_position = offset_to_position(span.start as usize, &source).unwrap();
+    //     let end_position = offset_to_position(span.end as usize, &source).unwrap();
+    //     println!(
+    //         "node: {:?}, start_position: {:?}, end_position: {:?}",
+    //         node.kind().debug_name(),
+    //         start_position,
+    //         end_position
+    //     );
+    //     if let Some(token) = sourcemap.lookup_source_view_token(
+    //         &lookup_table,
+    //         start_position.line,
+    //         start_position.character,
+    //     ) {
+    //         println!("-----------------------------------");
+    //         println!("{:?}", token.get_source());
+    //         println!(" {:?}", token.get_source_content());
+    //     } else {
+    //         println!("Token not found");
+    //     }
+    // }
 }
 
 fn offset_to_position(offset: usize, source_text: &str) -> Option<Position> {
